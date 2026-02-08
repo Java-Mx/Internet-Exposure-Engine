@@ -1,103 +1,92 @@
-Copyright Notice
+# LICENSE AND INTELLECTUAL PROPERTY RIGHTS NOTICE
 
-© 2026 All Rights Reserved.
+## Copyright
+**© 2026 All Rights Reserved**
 
-This project, including but not limited to its source code, model architecture, database schema, documentation, reports, and design concepts (collectively referred to as the “Work”), is the original intellectual property of the project author(s).
+This project, including its source code, machine learning models, architecture, database schema, documentation, generated reports, and design concepts (collectively referred to as the **“Work”**), is the original intellectual property of the author(s).
 
-Ownership
+---
 
-The author(s) retain full and exclusive ownership of:
+## Ownership
+The author(s) retain full and exclusive ownership of all components of this repository, including:
 
-Source code
+- Source code and scripts
+- Machine learning models and configurations
+- Data processing pipelines
+- Risk scoring methodology
+- Documentation and technical reports
+- System architecture and implementation logic
 
-Machine learning models
+This repository is made available **only for academic review, demonstration, and evaluation purposes**.
 
-Data processing pipelines
+No ownership rights are transferred to any viewer, reviewer, institution, or organization by accessing this repository.
 
-Risk scoring methodology
+---
 
-Documentation and generated reports
-
-System architecture and implementation logic
-
-This repository is published for academic review, demonstration, and evaluation purposes only.
-
-No ownership rights are transferred to any viewer, reviewer, organization, or institution by accessing this repository.
-
-No License Granted
-
-This repository is NOT open source.
+## No License Granted
+This repository is **not open source**.
 
 No permission is granted to:
 
-copy the code
+- Copy or reproduce the code
+- Reuse the implementation
+- Redistribute the project
+- Modify or adapt the project
+- Train derivative models
+- Deploy the system commercially
+- Integrate any part into another project
 
-reuse the implementation
+Access to this repository does **not** grant a license to use the Work.
 
-redistribute the project
+---
 
-modify the project
+## Restrictions
+The following actions are strictly prohibited without prior written permission from the author(s):
 
-train derivative models from it
+1. Republishing or uploading the code elsewhere
+2. Using the project in another academic submission
+3. Commercial use or monetization
+4. Creating derivative works
+5. Using portions of the implementation in other software
+6. Training other models using this architecture
+7. Presenting the project as one's own work
 
-deploy the system commercially
+---
 
-integrate any part into another project
+## Academic Integrity Notice
+This project is submitted as original academic work.
 
-Access to this repository does not grant a license to use the Work.
+Unauthorized reuse by other students or third parties may constitute:
 
-Restrictions
+- Academic misconduct
+- Plagiarism
+- Intellectual property violation
 
-The following actions are strictly prohibited without explicit written permission from the author(s):
+Institutions and instructors may review and evaluate the project but may not redistribute it.
 
-Republishing or uploading the code elsewhere
+---
 
-Using the project in another academic submission
-
-Commercial use or monetization
-
-Creating derivative works
-
-Using portions of the implementation in other software
-
-Training other models using this code or architecture
-
-Presenting the project as one’s own work
-
-Academic Integrity Notice
-
-This project is submitted as an original academic work.
-Any reuse by other students or third parties may constitute:
-
-academic misconduct
-
-plagiarism
-
-intellectual property violation
-
-Institutions or instructors are permitted to review and evaluate the project, but not to redistribute it.
-
-Limited Viewing Permission
-
+## Limited Viewing Permission
 View-only access is permitted solely for:
 
-academic evaluation
+- Academic evaluation
+- Judging and demonstration
 
-judging
+No reproduction, duplication, or technical extraction is permitted.
 
-demonstration
+---
 
-No reproduction or technical extraction is permitted.
+## Reporting Violations
+If unauthorized use, redistribution, or copying of this project is discovered, the author(s) may report the violation to the relevant academic institutions or hosting platforms.
 
-Reporting Violations
+---
 
-If you discover unauthorized use, redistribution, or copying of this project, please contact the author(s). Evidence of misuse may be reported to academic institutions or hosting platforms.
+## Contact
+For permissions, licensing inquiries, or collaboration requests, please contact the project author(s) directly.
 
-Contact
+---
 
-For permissions, licensing inquiries, or collaboration requests, contact the project author(s) directly.
-
-Legal Statement
-
+## Legal Statement
 All rights not expressly granted are reserved by the author(s).
+
 Unauthorized use may constitute copyright infringement under applicable intellectual property laws.
