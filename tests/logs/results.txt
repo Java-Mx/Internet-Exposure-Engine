@@ -1,0 +1,11 @@
+URL                                                          | Type       | Score    | Level      | Status
+---------------------------------------------------------------------------------------------------------
+br-icloud.com.br                                             | phishing   | 70.0     | HIGH       | PASSED
+http://www.szabadmunkaero.hu/cimoldal.html?start=12          | defacement | 15.0     | LOW        | FAILED (False Negative)
+http://larcadelcarnevale.com/catalogo/palloncini             | defacement | 50.0     | HIGH       | PASSED
+http://www.raci.it/component/user/reset.html                 | defacement | 65.0     | HIGH       | PASSED
+paypal.com.secure-webscr.tk                                  | phishing   | 86.5     | CRITICAL   | PASSED
+netflix-account-update.xyz                                   | phishing   | 77.1     | CRITICAL   | PASSED
+steam-community-login.ru                                     | phishing   | 69.2     | HIGH       | PASSED
+---------------------------------------------------------------------------------------------------------
+Total Failures: 1/7
