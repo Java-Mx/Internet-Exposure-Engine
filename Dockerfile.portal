@@ -1,0 +1,49 @@
+# ==============================================================================
+# STAGE 1: Builder
+# ==============================================================================
+FROM python:3.12-slim AS builder
+
+WORKDIR /build
+
+# Install compilation essentials
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+
+# Compile wheels to speed up final layer assembly and trim layer footprint
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+# ==============================================================================
+# STAGE 2: Runtime Production Hardening
+# ==============================================================================
+FROM python:3.12-slim AS runner
+
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PORT=8000
+
+# Copy compiled wheels from builder stage
+COPY --from=builder /root/.local /root/.local
+ENV PATH=/root/.local/bin:$PATH
+
+# Copy codebase
+COPY . .
+
+# Create unprivileged system user for process isolation (Hardening)
+RUN groupadd -g 10001 aeris && \
+    useradd -u 10001 -g aeris -s /bin/bash -m aeris && \
+    chown -R aeris:aeris /app
+
+# Switch to non-root execution path
+USER aeris
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD python -c "import requests; r = requests.get('http://localhost:8000/healthz'); exit(0 if r.status_code == 200 else 1)"
+
+CMD ["uvicorn", "portal.api:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -1,7 +1,16 @@
-# Environment variables
+# Environment variables & secrets
 .env
+.env.local
+.env.*.local
+*.secret
 
-# Python
+# Streamlit local credentials
+.streamlit/credentials.toml
+
+# Authentication local db
+auth/user_db.json
+
+# Python bytecode & environments
 __pycache__/
 *.py[cod]
 *$py.class
@@ -14,32 +23,58 @@ ENV/
 dist/
 build/
 
-# IDE
+# IDE & OS files
 .vscode/
 .idea/
 *.swp
 *.swo
+.gemini/
+.DS_Store
+Thumbs.db
 
 # Logs
 logs/
 *.log
 
-# Data
+# Databases & local caches
 data/
 *.db
 *.sqlite
+records/data/*.db
 
-# Models
+# ML Models & Binary Weights
 models/
 *.h5
 *.pkl
 *.joblib
+*.npz
+*.zip
+ml_models/datasets/*.csv
+ml_models/datasets/*.zip
+ml_models/datasets/*.npz
 
-# OS
-.DS_Store
-Thumbs.db
-
-# Testing
+# Testing & Coverage
 .pytest_cache/
 .coverage
+.coverage.*
 htmlcov/
+coverage.json
+
+# Generated reports & temp outputs
+reports/*.json
+reports/*.html
+offline_scans_fallback.csv
+red_team_test_results.csv
+red_team_security_report.md
+feedback/
+
+# Text files: exclude generic text dumps, but preserve project configs and requirements
+*.txt
+!requirements*.txt
+!config/trusted_domains.txt
+
+# CSV files: exclude large datasets, allow sample fixtures
+*.csv
+!data/*.csv
+!tests/**/*.csv
+!research/datasets/*.csv

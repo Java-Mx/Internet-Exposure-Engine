@@ -1,0 +1,648 @@
+{
+  "aeris_version": "2.0 (9-Layer Intelligence Architecture)",
+  "validation_date": "2026-05-26T20:24:07.767946",
+  "suites": {
+    "adversarial": {
+      "suite": "adversarial",
+      "total": 43,
+      "passed": 42,
+      "pass_rate": 0.977,
+      "false_positive_rate": 0.067,
+      "status": "PASS",
+      "results": [
+        {
+          "test_id": "ADV-TS-01",
+          "attack": "typosquatting",
+          "domain": "gooogle.com",
+          "passed": true,
+          "score": 76.5,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-TS-02",
+          "attack": "digit_substitution",
+          "domain": "paypa1.com",
+          "passed": true,
+          "score": 100.0,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-TS-03",
+          "attack": "typosquatting",
+          "domain": "micosoft.com",
+          "passed": true,
+          "score": 73.8,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-TS-04",
+          "attack": "typosquatting",
+          "domain": "arnazon.com",
+          "passed": true,
+          "score": 82.0,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-TS-05",
+          "attack": "digit_substitution",
+          "domain": "faceb00k-login.com",
+          "passed": true,
+          "score": 92.46519472089618,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-TS-06",
+          "attack": "digit_substitution",
+          "domain": "netfl1x-billing.com",
+          "passed": true,
+          "score": 81.79992031840891,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-TS-07",
+          "attack": "typosquatting",
+          "domain": "discorb.com",
+          "passed": true,
+          "score": 70.2,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-TS-08",
+          "attack": "digit_substitution",
+          "domain": "steamcommun1ty.com",
+          "passed": true,
+          "score": 90.0,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-TS-09",
+          "attack": "typosquatting",
+          "domain": "goggle.com",
+          "passed": true,
+          "score": 76.5,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-TS-10",
+          "attack": "typosquatting",
+          "domain": "linkedln.com",
+          "passed": true,
+          "score": 70.0,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-IDN-01",
+          "attack": "punycode_homoglyph",
+          "domain": "xn--pypal-4ve.com",
+          "passed": true,
+          "score": 88.0,
+          "evasion_score": 0.4,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-IDN-02",
+          "attack": "punycode_homoglyph",
+          "domain": "xn--gogle-cua.com",
+          "passed": true,
+          "score": 85.0,
+          "evasion_score": 0.4,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-PL-01",
+          "attack": "partial_legitimacy",
+          "domain": "paypal-secure-login.tk",
+          "passed": true,
+          "score": 99.37992729054812,
+          "evasion_score": 0.25,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-PL-02",
+          "attack": "partial_legitimacy",
+          "domain": "microsoft-update-center.ml",
+          "passed": true,
+          "score": 98.85666185223984,
+          "evasion_score": 0.29,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-PL-03",
+          "attack": "brand_masking_freetld",
+          "domain": "secure-paypal-verify.ml",
+          "passed": true,
+          "score": 100.0,
+          "evasion_score": 0.25,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-PL-04",
+          "attack": "partial_legitimacy",
+          "domain": "apple-id-verify.cf",
+          "passed": true,
+          "score": 97.3899203184089,
+          "evasion_score": 0.25,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-PL-05",
+          "attack": "compound_evasion",
+          "domain": "log1n-amazon-account.com",
+          "passed": true,
+          "score": 97.0149203184089,
+          "evasion_score": 0.25,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-PL-06",
+          "attack": "partial_legitimacy",
+          "domain": "support-chase-bank-alert.ga",
+          "passed": true,
+          "score": 100.0,
+          "evasion_score": 0.29,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-PL-07",
+          "attack": "partial_legitimacy",
+          "domain": "appleid-verify-secure.com",
+          "passed": true,
+          "score": 97.40666185223985,
+          "evasion_score": 0.25,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-PL-08",
+          "attack": "brand_masking",
+          "domain": "whatsapp-free-call.com",
+          "passed": true,
+          "score": 80.0,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-FP-01",
+          "attack": "false_positive_check",
+          "domain": "google.com",
+          "passed": true,
+          "score": 15.0,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-FP-02",
+          "attack": "false_positive_check",
+          "domain": "microsoft.com",
+          "passed": true,
+          "score": 55.0,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-FP-03",
+          "attack": "false_positive_check",
+          "domain": "amazon.com",
+          "passed": true,
+          "score": 32.2,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-FP-04",
+          "attack": "false_positive_check",
+          "domain": "apple.com",
+          "passed": true,
+          "score": 15.0,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-FP-05",
+          "attack": "false_positive_check",
+          "domain": "facebook.com",
+          "passed": true,
+          "score": 15.0,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-FP-06",
+          "attack": "false_positive_check",
+          "domain": "github.com",
+          "passed": true,
+          "score": 11.040000000000001,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-FP-07",
+          "attack": "false_positive_check",
+          "domain": "wikipedia.org",
+          "passed": true,
+          "score": 15.0,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-FP-08",
+          "attack": "false_positive_check",
+          "domain": "bbc.com",
+          "passed": true,
+          "score": 15.0,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-FP-09",
+          "attack": "false_positive_check",
+          "domain": "reuters.com",
+          "passed": true,
+          "score": 15.0,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-FP-10",
+          "attack": "false_positive_check",
+          "domain": "stackoverflow.com",
+          "passed": true,
+          "score": 15.0,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-FP-11",
+          "attack": "false_positive_check",
+          "domain": "python.org",
+          "passed": true,
+          "score": 15.0,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-FP-12",
+          "attack": "false_positive_check",
+          "domain": "mozilla.org",
+          "passed": true,
+          "score": 15.0,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-FP-13",
+          "attack": "false_positive_check",
+          "domain": "linux.org",
+          "passed": true,
+          "score": 15.0,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-FP-14",
+          "attack": "false_positive_check",
+          "domain": "nasa.gov",
+          "passed": false,
+          "score": 65.0399203184089,
+          "evasion_score": 0.0,
+          "failure": "FALSE POSITIVE: 'nasa.gov' scored 65.0 (too high for benign domain)"
+        },
+        {
+          "test_id": "ADV-FP-15",
+          "attack": "false_positive_check",
+          "domain": "mit.edu",
+          "passed": true,
+          "score": 33.46640106136302,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-BOOST-01",
+          "attack": "evasion_priority_boost",
+          "domain": "gooogle.com",
+          "passed": true,
+          "score": 0.0,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-BOOST-02",
+          "attack": "evasion_priority_boost",
+          "domain": "paypa1.com",
+          "passed": true,
+          "score": 0.0,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-BOOST-03",
+          "attack": "evasion_priority_boost",
+          "domain": "micosoft.com",
+          "passed": true,
+          "score": 0.0,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-BOOST-04",
+          "attack": "evasion_priority_boost",
+          "domain": "arnazon.com",
+          "passed": true,
+          "score": 0.0,
+          "evasion_score": 0.0,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-BOOST-05",
+          "attack": "evasion_priority_boost",
+          "domain": "xn--pypal-4ve.com",
+          "passed": true,
+          "score": 40.0,
+          "evasion_score": 0.4,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-UNI-01",
+          "attack": "unicode_confusable",
+          "domain": "p\u0430ypal.com",
+          "passed": true,
+          "score": 12.2,
+          "evasion_score": 0.122,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-UNI-02",
+          "attack": "unicode_confusable",
+          "domain": "g\u043e\u043egle.com",
+          "passed": true,
+          "score": 24.5,
+          "evasion_score": 0.245,
+          "failure": ""
+        },
+        {
+          "test_id": "ADV-UNI-03",
+          "attack": "unicode_confusable",
+          "domain": "\u0430mazon.com",
+          "passed": true,
+          "score": 12.2,
+          "evasion_score": 0.122,
+          "failure": ""
+        }
+      ]
+    },
+    "calibration": {
+      "suite": "calibration",
+      "total": 11,
+      "passed": 11,
+      "pass_rate": 1.0,
+      "status": "PASS",
+      "results": [
+        {
+          "test_id": "CAL-1",
+          "passed": true,
+          "detail": "detection = 1.000"
+        },
+        {
+          "test_id": "CAL-2",
+          "passed": true,
+          "detail": "detection = 0.095"
+        },
+        {
+          "test_id": "CAL-3",
+          "passed": true,
+          "detail": "attribution = 0.100"
+        },
+        {
+          "test_id": "CAL-4",
+          "passed": true,
+          "detail": "api=0.760 vs heuristic=0.195"
+        },
+        {
+          "test_id": "CAL-5",
+          "passed": true,
+          "detail": "environmental = 0.750"
+        },
+        {
+          "test_id": "CAL-6",
+          "passed": true,
+          "detail": "PASS"
+        },
+        {
+          "test_id": "CAL-7",
+          "passed": true,
+          "detail": "composite = 0.359"
+        },
+        {
+          "test_id": "CAL-8",
+          "passed": true,
+          "detail": "scores: [0.095, 0.265, 0.397, 0.53, 0.662]"
+        },
+        {
+          "test_id": "CAL-9",
+          "passed": true,
+          "detail": "PASS"
+        },
+        {
+          "test_id": "CAL-12",
+          "passed": true,
+          "detail": "pci=0.660 bare=0.500"
+        },
+        {
+          "test_id": "CAL-10",
+          "passed": true,
+          "detail": "PASS"
+        }
+      ]
+    },
+    "benchmarks": {
+      "suite": "benchmarks",
+      "total_samples": 102,
+      "precision": 0.9583,
+      "recall": 0.6133,
+      "f1": 0.748,
+      "fpr": 0.0741,
+      "accuracy": 0.6961,
+      "mean_confidence_tp": 0.3777,
+      "mean_confidence_fp": 0.365,
+      "throughput_per_sec": 0.22,
+      "errors": 0,
+      "status": "NEEDS_WORK",
+      "confusion_matrix": {
+        "tp": 46,
+        "tn": 25,
+        "fp": 2,
+        "fn": 29
+      },
+      "threshold_used": 40.0
+    },
+    "explainability": {
+      "suite": "explainability",
+      "total": 13,
+      "passed": 12,
+      "pass_rate": 0.923,
+      "soc_trust_level": "HIGH",
+      "status": "PASS",
+      "results": [
+        {
+          "test_id": "EXP-1",
+          "passed": true,
+          "detail": "len=154, content='Listed in URLhaus with tag 'phishing'. Additional signals: VirusTotal: 4/90 engi...'"
+        },
+        {
+          "test_id": "EXP-2",
+          "passed": true,
+          "detail": "empty findings: []"
+        },
+        {
+          "test_id": "EXP-3",
+          "passed": true,
+          "detail": "invalid types: []"
+        },
+        {
+          "test_id": "EXP-4",
+          "passed": true,
+          "detail": "words=41, jargon_hits=[], preview='Significant risk indicators have been detected. This target requires prioritized attention within th'"
+        },
+        {
+          "test_id": "EXP-5",
+          "passed": true,
+          "detail": "immediate_actions=2"
+        },
+        {
+          "test_id": "EXP-6",
+          "passed": true,
+          "detail": "failures: []"
+        },
+        {
+          "test_id": "EXP-7",
+          "passed": true,
+          "detail": "intent='Credential Harvesting', signals=['Suspicious login keyword in URL path', 'VirusTotal: 4/90 engines flagged as phishing']"
+        },
+        {
+          "test_id": "EXP-8",
+          "passed": true,
+          "detail": "len=137, preview='Moderate evidence base. Business Impact confidence (45%) limits overall certaint'"
+        },
+        {
+          "test_id": "EXP-9",
+          "passed": true,
+          "detail": "entry_id=L7-P-f075cf1b-1779808142, hash=f075cf1b39071121, confidence=0.78"
+        },
+        {
+          "test_id": "EXP-10",
+          "passed": true,
+          "detail": "formatted='$550K', total=550000"
+        },
+        {
+          "test_id": "EXP-11",
+          "passed": false,
+          "detail": "FK grade \u2248 14.1"
+        },
+        {
+          "test_id": "EXP-13",
+          "passed": true,
+          "detail": "hits=[], narrative='Listed in URLhaus with tag 'phishing'. Additional signals: VirusTotal: 4/90 engines flagged as phish'"
+        },
+        {
+          "test_id": "EXP-14",
+          "passed": true,
+          "detail": "narrative='No significant infrastructure correlation detected.'"
+        }
+      ]
+    },
+    "integration": {
+      "suite": "integration",
+      "total": 14,
+      "passed": 14,
+      "pass_rate": 1.0,
+      "architecture_sound": true,
+      "status": "PASS",
+      "results": [
+        {
+          "invariant": "CI-1",
+          "passed": true,
+          "detail": "all in bounds"
+        },
+        {
+          "invariant": "CI-2",
+          "passed": true,
+          "detail": "all in bounds"
+        },
+        {
+          "invariant": "CI-3",
+          "passed": true,
+          "detail": "composite=0.359"
+        },
+        {
+          "invariant": "CI-4",
+          "passed": true,
+          "detail": "final total_weight=46.75"
+        },
+        {
+          "invariant": "CI-5",
+          "passed": true,
+          "detail": "all \u2265 1.0"
+        },
+        {
+          "invariant": "CI-6",
+          "passed": true,
+          "detail": "all positive"
+        },
+        {
+          "invariant": "CI-7",
+          "passed": true,
+          "detail": "amplifiers=[0.0, 0.85]"
+        },
+        {
+          "invariant": "CI-9",
+          "passed": true,
+          "detail": "all in bounds"
+        },
+        {
+          "invariant": "CI-10",
+          "passed": true,
+          "detail": "hashes=['44136fa355b3678a', 'd8497d9d82770a70', '44136fa355b3678a']"
+        },
+        {
+          "invariant": "CI-11",
+          "passed": true,
+          "detail": "all correct"
+        },
+        {
+          "invariant": "CI-12",
+          "passed": true,
+          "detail": "keys=['detection', 'attribution', 'behavioral', 'environmental', 'business_impact', 'composite', 'composite_pct', 'label', 'narrative']"
+        },
+        {
+          "invariant": "CI-13",
+          "passed": true,
+          "detail": "evasive=1.075 benign=1.000"
+        },
+        {
+          "invariant": "CI-14",
+          "passed": true,
+          "detail": "top_n contributions=[45.5, 32.5, 19.5]"
+        },
+        {
+          "invariant": "CI-15",
+          "passed": true,
+          "detail": "all non-negative"
+        }
+      ]
+    }
+  },
+  "overall_status": "PLATFORM_GRADE",
+  "enterprise_ready": false,
+  "total_tests": 81,
+  "total_passed": 79,
+  "elapsed_seconds": 894.33
+}

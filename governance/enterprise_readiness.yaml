@@ -1,0 +1,138 @@
+aeris_enterprise_readiness:
+  version: '1.0'
+  last_computed: '2026-06-08T13:16:44.260211'
+  overall_score: 100
+  categories:
+    Authentication:
+      score: 100
+      max_score: 100
+      status: passing
+      checks:
+        auth_module_exists:
+          description: auth/auth_manager.py exists
+          passing: true
+        roles_defined:
+          description: auth/roles.py defines admin/analyst/viewer
+          passing: true
+        user_db_exists:
+          description: auth/user_db.json exists (users created)
+          passing: true
+        default_password_changed:
+          description: Default admin password has been changed
+          passing: true
+        login_gate_active:
+          description: Authentication gate present in app.py
+          passing: true
+    Authorization:
+      score: 100
+      max_score: 100
+      status: passing
+      checks:
+        rbac_module_exists:
+          description: auth/roles.py with ROLE_PERMISSIONS defined
+          passing: true
+        debug_gated_to_admin:
+          description: Debug mode requires admin role
+          passing: true
+        red_team_gated:
+          description: Red-team and stress test pages require analyst+
+          passing: true
+    Auditability:
+      score: 100
+      max_score: 100
+      status: passing
+      checks:
+        audit_trail_module_exists:
+          description: ai_governance/audit_trail.py exists
+          passing: true
+        signing_key_not_default:
+          description: AERIS_SIGNING_KEY env var is set and not default value
+          passing: true
+        no_hardcoded_intelligence:
+          description: No hardcoded IP 104.21.41.201 found in codebase
+          passing: true
+        constitution_exists:
+          description: docs/AERIS_ENTERPRISE_CONSTITUTION.md exists
+          passing: true
+    Security:
+      score: 100
+      max_score: 100
+      status: passing
+      checks:
+        env_validator_exists:
+          description: config/env_validator.py exists
+          passing: true
+        secrets_not_in_env:
+          description: .env file contains no live API keys (only placeholders)
+          passing: true
+        html_sanitizer_exists:
+          description: utils/html_sanitizer.py exists
+          passing: true
+        gitignore_covers_secrets:
+          description: .gitignore covers .env and credentials.toml
+          passing: true
+    Observability:
+      score: 100
+      max_score: 100
+      status: passing
+      checks:
+        structured_logging_config:
+          description: config/logging_config.py exists and is configured
+          passing: true
+        error_handling_explicit:
+          description: No bare except:pass blocks in services/ or pages/
+          passing: true
+        env_validation_on_startup:
+          description: env_validator called at app startup
+          passing: true
+    Architecture:
+      score: 100
+      max_score: 100
+      status: passing
+      checks:
+        pages_directory_exists:
+          description: pages/ directory exists with page modules
+          passing: true
+        services_directory_exists:
+          description: services/ directory exists with service modules
+          passing: true
+        app_py_under_limit:
+          description: app.py is under 300 lines
+          passing: true
+        no_business_logic_in_pages:
+          description: Page files contain no direct DB calls or scoring logic
+          passing: true
+        visualizations_directory_exists:
+          description: visualizations/ directory with provenance-aware modules
+          passing: true
+    Intelligence_Integrity:
+      score: 100
+      max_score: 100
+      status: passing
+      checks:
+        no_hardcoded_asn:
+          description: No hardcoded 'AS13335' or similar ASNs in visualization code
+          passing: true
+        data_provenance_module_exists:
+          description: visualizations/provenance.py with DataProvenance dataclass
+          passing: true
+        no_fake_financial_figures:
+          description: No dollar amount strings from lookup dicts in UI
+          passing: true
+        anti_theater_scanner_exists:
+          description: governance/anti_theater_scanner.py exists
+          passing: true
+    Research_Validation:
+      score: 100
+      max_score: 100
+      status: passing
+      checks:
+        no_static_accuracy_claims:
+          description: No hardcoded 98.0% or 2.0% FNR metrics in UI code
+          passing: true
+        research_directory_exists:
+          description: research/ directory scaffolded (Phase F)
+          passing: true
+        evaluation_framework_exists:
+          description: research/evaluation/ exists (Phase F)
+          passing: true

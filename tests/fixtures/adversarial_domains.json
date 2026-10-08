@@ -1,0 +1,60 @@
+{
+  "adversarial_domains": [
+    {"domain": "gooogle.com",             "attack": "typosquatting",        "target_brand": "google",    "expected_detected": true},
+    {"domain": "paypa1.com",              "attack": "digit_substitution",   "target_brand": "paypal",    "expected_detected": true},
+    {"domain": "micosoft.com",            "attack": "typosquatting",        "target_brand": "microsoft", "expected_detected": true},
+    {"domain": "arnazon.com",             "attack": "typosquatting",        "target_brand": "amazon",    "expected_detected": true},
+    {"domain": "xn--pypal-4ve.com",       "attack": "punycode_homoglyph",   "target_brand": "paypal",    "expected_detected": true},
+    {"domain": "xn--gogle-cua.com",       "attack": "punycode_homoglyph",   "target_brand": "google",    "expected_detected": true},
+    {"domain": "paypal-secure-login.tk",  "attack": "partial_legitimacy",   "target_brand": "paypal",    "expected_detected": true},
+    {"domain": "microsoft-update-center.ml","attack":"partial_legitimacy",  "target_brand": "microsoft", "expected_detected": true},
+    {"domain": "secure-paypal-verify.ml", "attack": "brand_masking_freetld","target_brand": "paypal",    "expected_detected": true},
+    {"domain": "apple-id-verify.cf",      "attack": "partial_legitimacy",   "target_brand": "apple",     "expected_detected": true},
+    {"domain": "faceb00k-login.com",      "attack": "digit_substitution",   "target_brand": "facebook",  "expected_detected": true},
+    {"domain": "netfl1x-billing.com",     "attack": "digit_substitution",   "target_brand": "netflix",   "expected_detected": true},
+    {"domain": "log1n-amazon-account.com","attack": "compound_evasion",     "target_brand": "amazon",    "expected_detected": true},
+    {"domain": "support-chase-bank-alert.ga","attack":"partial_legitimacy", "target_brand": "chase",     "expected_detected": true},
+    {"domain": "discorb.com",             "attack": "typosquatting",        "target_brand": "discord",   "expected_detected": true},
+    {"domain": "steamcommun1ty.com",      "attack": "digit_substitution",   "target_brand": "steam",     "expected_detected": true},
+    {"domain": "goggle.com",              "attack": "typosquatting",        "target_brand": "google",    "expected_detected": true},
+    {"domain": "appleid-verify-secure.com","attack":"partial_legitimacy",   "target_brand": "apple",     "expected_detected": true},
+    {"domain": "whatsapp-free-call.com",  "attack": "brand_masking",        "target_brand": "whatsapp",  "expected_detected": true},
+    {"domain": "linkedln.com",            "attack": "typosquatting",        "target_brand": "linkedin",  "expected_detected": true}
+  ],
+  "benign_domains": [
+    {"domain": "google.com",         "expected_malicious": false},
+    {"domain": "microsoft.com",      "expected_malicious": false},
+    {"domain": "amazon.com",         "expected_malicious": false},
+    {"domain": "apple.com",          "expected_malicious": false},
+    {"domain": "facebook.com",       "expected_malicious": false},
+    {"domain": "github.com",         "expected_malicious": false},
+    {"domain": "wikipedia.org",      "expected_malicious": false},
+    {"domain": "bbc.com",            "expected_malicious": false},
+    {"domain": "reuters.com",        "expected_malicious": false},
+    {"domain": "stackoverflow.com",  "expected_malicious": false},
+    {"domain": "python.org",         "expected_malicious": false},
+    {"domain": "mozilla.org",        "expected_malicious": false},
+    {"domain": "linux.org",          "expected_malicious": false},
+    {"domain": "nasa.gov",           "expected_malicious": false},
+    {"domain": "mit.edu",            "expected_malicious": false}
+  ],
+  "known_malicious": [
+    {"domain": "testphp.vulnweb.com",   "reason": "Known intentionally vulnerable test site", "min_score": 80},
+    {"domain": "dvwa.co.uk",            "reason": "Damn Vulnerable Web Application",          "min_score": 85},
+    {"domain": "juice-shop.herokuapp.com","reason":"OWASP Juice Shop",                        "min_score": 80}
+  ],
+  "confidence_edge_cases": [
+    {"url": "a.tk",                         "description": "Minimal signals — confidence should be low",  "expected_max_confidence": 0.45},
+    {"url": "paypal-secure.ml/login",       "description": "Multiple signals — confidence should be higher","expected_min_confidence": 0.55},
+    {"url": "testphp.vulnweb.com",          "description": "Known vuln — high confidence expected",       "expected_min_confidence": 0.60},
+    {"url": "google.com",                   "description": "Trusted domain — low risk, moderate confidence","expected_max_score": 30}
+  ],
+  "reputation_bypass": [
+    {
+      "url": "newdomain-paypal-verify.com",
+      "description": "Brand masking — may have clean VT score but structural signals are high",
+      "expected_behavior": "structural_score_high_despite_clean_reputation",
+      "expected_contradiction": true
+    }
+  ]
+}

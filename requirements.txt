@@ -16,9 +16,7 @@ sentence-transformers>=2.2.0
 fastapi>=0.100.0
 uvicorn>=0.23.0
 
-# Database - MySQL
-mysql-connector-python>=8.1.0
-pymysql>=1.1.0
+# Database
 sqlalchemy>=2.0.0
 
 # HTTP Requests
@@ -28,14 +26,22 @@ requests>=2.31.0
 python-dotenv>=1.0.0
 
 # Visualization
-matplotlib>=3.7.0
-seaborn>=0.12.0
 plotly>=5.15.0
 
 # Testing
 pytest>=7.4.0
-pytest-cov>=4.1.0
 
 # Utilities
 python-dateutil>=2.8.0
 tqdm>=4.66.0
+
+# Streamlit UI
+streamlit>=1.30.0
+
+
+# PDF Report Generation
+reportlab>=4.0.0
+
+# Limitation Patches (v2.1)
+python-whois>=0.8.0      # Domain age check (WHOIS lookup)
+psutil>=5.9.0            # Memory & resource monitoring (Phase 7 stress tests)

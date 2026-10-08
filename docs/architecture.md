@@ -1,117 +1,81 @@
-# System Architecture
+# Architecture Overview
 
-## Overview
-
-The Internet Exposure Discovery and Risk Scoring System follows a modular, pipeline-driven architecture where each component is independent and testable.
-
-## High-Level Architecture
+## System Pipeline
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                     Data Ingestion Layer                        │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────┐ ┌──────────┐ │
-│  │  Shodan  │ │  Censys  │ │  GitHub  │ │ HIBP │ │   NVD    │ │
-│  └────┬─────┘ └────┬─────┘ └────┬─────┘ └───┬──┘ └────┬─────┘ │
-└───────┼────────────┼────────────┼────────────┼─────────┼───────┘
-        │            │            │            │         │
-        └────────────┴────────────┴────────────┴─────────┘
-                              │
-                    ┌─────────▼─────────┐
-                    │   Normalization   │
-                    └─────────┬─────────┘
-                              │
-                    ┌─────────▼─────────┐
-                    │  MySQL Database   │
-                    └─────────┬─────────┘
-                              │
-                    ┌─────────▼─────────┐
-                    │Feature Engineering│
-                    └─────────┬─────────┘
-                              │
-        ┌─────────────────────┼─────────────────────┐
-        │                     │                     │
-┌───────▼────────┐  ┌─────────▼─────────┐  ┌───────▼────────┐
-│   Supervised   │  │  Unsupervised     │  │ Graph Analysis │
-│   ML Models    │  │  Anomaly Detection│  │ & Propagation  │
-└───────┬────────┘  └─────────┬─────────┘  └───────┬────────┘
-        │                     │                     │
-        └─────────────────────┼─────────────────────┘
-                              │
-                    ┌─────────▼─────────┐
-                    │  Risk Scoring     │
-                    │     Engine        │
-                    └─────────┬─────────┘
-                              │
-                    ┌─────────▼─────────┐
-                    │  Report Generator │
-                    └───────────────────┘
+User Input (CLI / Streamlit)
+        │
+        ▼
+┌──────────────────┐
+│  Input Validation │ ← utils/validators.py
+│  & Parsing        │ ← risk_scanner.parse_input_list()
+└──────────────────┘
+        │
+        ▼
+┌──────────────────┐
+│  Data Ingestion   │ ← Shodan, Censys, GitHub, HIBP connectors
+│  & Normalisation  │ ← data_ingestion/
+└──────────────────┘
+        │
+        ▼
+┌──────────────────┐
+│  Feature          │ ← feature_engineering/
+│  Engineering      │   Categorical, numerical, text features
+└──────────────────┘
+        │
+        ▼
+┌──────────────────┐
+│  Threat Intel     │ ← risk_scoring/threat_intel/
+│  Enrichment       │   Shodan ports, Censys certs, NVD CVEs
+└──────────────────┘
+        │
+        ▼
+┌──────────────────┐
+│  ML Prediction    │ ← ml_models/
+│  & Anomaly Det.   │   Random Forest + Isolation Forest
+└──────────────────┘
+        │
+        ▼
+┌──────────────────┐
+│  Graph Analysis   │ ← graph_analysis/
+│  & Propagation    │   NetworkX-based risk propagation
+└──────────────────┘
+        │
+        ▼
+┌──────────────────┐
+│  Risk Scoring     │ ← risk_scoring/
+│  Engine           │   Weighted signals + heuristic boost
+│                   │   + NVD Technology Risk Index
+└──────────────────┘
+        │
+        ▼
+┌──────────────────┐
+│  Explanation &    │ ← risk_scoring/explanation_generator.py
+│  Report Output    │ ← reporting/
+└──────────────────┘
 ```
 
-## Component Details
+## Key Components
 
-### 1. Data Ingestion Layer
-- **Purpose**: Continuously fetch data from public APIs
-- **Components**: 5 connectors (Shodan, Censys, GitHub, HIBP, NVD)
-- **Output**: Normalized Asset entities with timestamps
+### Input Layer
+- `risk_scanner.parse_input_list()` — parses domains, URLs, and IPs with RFC-compliant validation
+- `utils/validators.py` — rejects private IPs, invalid TLDs, and oversized inputs
+- `utils/safe_requests.py` — centralised HTTP client with retries, timeouts, and error wrapping
 
-### 2. Feature Engineering
-- **Purpose**: Transform raw data into ML-ready features
-- **Components**: 
-  - Numeric extractors (CVSS, port, duration)
-  - Categorical encoders (service, ASN, country)
-  - Text embeddings (Sentence-BERT)
-- **Output**: Feature vectors for each asset
+### Scoring Engine
+- **Weighted Signal Combination**: ML (30%) + Anomaly (25%) + Graph (20%) + Propagation (25%)
+- **Heuristic Boost**: `heuristic_detector.py` provides 360° URL inspection (entropy, patterns, path analysis)
+- **NVD Context**: `vulnerability_context.py` computes a Technology Risk Index (up to +15% boost)
+- **Trusted Domains**: Major platforms are recognised and shielded from false-positive heuristics
 
-### 3. ML Models
-- **Supervised**: Logistic Regression, Random Forest, Neural Network
-- **Unsupervised**: Isolation Forest, DBSCAN
-- **Output**: Severity predictions + anomaly scores
+### Data Flow
+1. User submits targets via Streamlit (`app.py`) or CLI (`risk_scanner.py`)
+2. `ScanEngine` wraps `AutomatedPipeline` for streaming progress
+3. Pipeline validates → enriches → predicts → scores → reports
+4. Results displayed in dashboard or written to JSON
 
-### 4. Graph Analysis
-- **Purpose**: Model asset relationships and propagate risk
-- **Components**: NetworkX graph, centrality metrics, risk propagation
-- **Output**: Graph risk scores
-
-### 5. Risk Scoring Engine
-- **Purpose**: Combine all signals into final risk score
-- **Formula**: `0.3×severity + 0.25×breach + 0.2×graph + 0.15×anomaly + 0.1×CVE`
-- **Output**: Risk score (0-100) + explanation
-
-### 6. Reporting
-- **Purpose**: Generate evidence-backed reports
-- **Output**: HTML/PDF reports with visualizations
-
-## Database Schema
-
-See [schema.sql](file:///f:/internet_exposure_system/database/schema.sql) for complete schema.
-
-**Key Tables**:
-- `assets` - Core asset data
-- `cve_data` - Vulnerability information
-- `breach_data` - Breach records
-- `github_exposures` - Credential leaks
-- `asset_features` - ML features
-- `risk_assessments` - Final risk scores
-- `ml_predictions` - Model outputs
-- `graph_edges` - Asset relationships
-
-## Data Flow
-
-1. **Ingestion** → Raw data from APIs
-2. **Normalization** → Canonical Asset format
-3. **Storage** → MySQL database (append-only)
-4. **Feature Engineering** → ML-ready vectors
-5. **ML Inference** → Predictions + anomaly scores
-6. **Graph Analysis** → Relationship mapping + risk propagation
-7. **Risk Scoring** → Weighted combination
-8. **Reporting** → Evidence-backed reports
-
-## Technology Stack
-
-- **Language**: Python 3.9+
-- **Database**: MySQL 8.0+
-- **ML Frameworks**: TensorFlow, scikit-learn
-- **Graph**: NetworkX
-- **NLP**: Sentence-Transformers
-- **ORM**: SQLAlchemy
-- **Testing**: pytest
+### NVD Integration
+- `nvd_sync_service.py` pulls CVEs from NVD API 2.0 into local SQLite (`data/nvd_cve_cache.db`)
+- `technology_inferrer.py` infers technology categories from passive metadata
+- `vulnerability_context.py` computes risk index from matched CVEs
+- All NVD data fetching is offline-only — never during live scans

@@ -1,0 +1,104 @@
+name: AERIS Enterprise CI-CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "release/*" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # 1. Code Quality & Security Auditing
+  audit:
+    name: Code Quality & Linting Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Setup Python Runtime
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Linting & Security Tools
+        run: |
+          pip install flake8 black bandit
+
+      - name: Run Black Code Formatter Audit
+        run: black --check --diff . --exclude venv
+
+      - name: Run Flake8 Code Quality Audit
+        run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude venv
+
+      - name: Run Bandit Cryptographic Security Audit
+        run: bandit -r . -x ./venv
+
+  # 2. Continuous Testing
+  test:
+    name: Continuous Integration & Validation Testing
+    runs-on: ubuntu-latest
+    needs: audit
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Setup Python Runtime
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Project Dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest pytest-cov httpx
+
+      - name: Run Master Integration & Validation Suites
+        run: |
+          python -X utf8 tests/run_validation.py --skip-benchmarks
+
+      - name: Run Security Regression Test Suite
+        run: |
+          pytest tests/integration/test_security_regression.py -v
+
+      - name: Run Target-Based Coverage Checker
+        run: |
+          python governance/check_coverage.py
+
+      - name: Run Mutation Testing Suite
+        run: |
+          python governance/mutation_tester.py
+
+      - name: Run Anti-Theater Scanner Compliance
+        run: |
+          python governance/anti_theater_scanner.py --fail-on HIGH
+
+  # 3. Secure Container Compilation & Packaging
+  package:
+    name: Secure Container Compilation & Packaging
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build API Portal Production Container
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.portal
+          push: false  # In production, login to registry and set to true
+          tags: aeris-registry/portal:latest,aeris-registry/portal:${{ github.sha }}
+
+      - name: Build UI Dashboard Production Container
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.dashboard
+          push: false  # In production, login to registry and set to true
+          tags: aeris-registry/dashboard:latest,aeris-registry/dashboard:${{ github.sha }}

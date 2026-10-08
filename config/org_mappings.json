@@ -1,0 +1,23 @@
+{
+    "_comment": "Client-specific asset ownership mappings for EIRPP org mapper.",
+    "_doc": "Two sections: 'patterns' (regex → business unit) and 'direct' (exact hostname → full context).",
+
+    "patterns": {
+        "pay|billing|checkout": "Finance / Payments",
+        "auth|sso|login": "Security / Identity",
+        "support|helpdesk": "Customer Success"
+    },
+
+    "direct": {
+        "api.example.com": {
+            "business_unit": "Platform Engineering",
+            "owner_team": "Backend Team",
+            "owner_contact": "platform@example.com"
+        },
+        "admin.example.com": {
+            "business_unit": "IT Operations",
+            "owner_team": "Infrastructure",
+            "owner_contact": "infra@example.com"
+        }
+    }
+}

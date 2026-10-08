@@ -1,0 +1,28 @@
+# IERSS Trusted Domain Whitelist
+# ─────────────────────────────────────────────────────────────────────────────
+# Domains or domain suffixes listed here are treated as organisationally trusted.
+# They will still be checked for typosquatting, phishing patterns, and reputation
+# feeds — but infrastructure complexity scoring is SKIPPED, preventing false
+# MEDIUM alerts on legitimate complex infrastructure you own or regularly use.
+#
+# Rules:
+#   - One entry per line
+#   - Prefix with a dot (.) to match ALL subdomains: .example.com
+#   - Exact match: example.com
+#   - Lines starting with # are comments
+#   - Blank lines are ignored
+#
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Internal / corporate infrastructure examples (edit for your org):
+# .internal
+# .corp
+# .local
+# intranet.mycompany.com
+# hr.mycompany.com
+
+# Example trusted third-party SaaS (uncomment as needed):
+# .github.com
+# .atlassian.net
+# .slack.com
+# .zoom.us

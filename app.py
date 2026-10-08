@@ -1,583 +1,280 @@
 """
-Internet Exposure & Leak Discovery Engine - Streamlit Dashboard
-
-Professional web interface for scanning websites and displaying
-exposure results with real-time progress updates.
-
-Run with: streamlit run app.py
+AERIS — Exposure Intelligence & Risk Prioritization Platform
+=============================================================
+Central dashboard router. Handles startup validation, authentication gate,
+sidebar navigation based on role permissions, and dispatches page rendering.
 """
-
+import os
+import sys
+import html as _html
 import streamlit as st
-import pandas as pd
-import json
-import time
-from datetime import datetime
-from typing import List, Dict, Any
+import streamlit.components.v1 as st_components
 
-# Import the scan engine
-from scan_engine import ScanEngine, ScanProgress
+# Add project root to path to ensure reliable imports
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+# 1. Startup validation (Fail-fast environment validation)
+try:
+    from config.env_validator import fail_if_invalid
+    fail_if_invalid()
+except Exception as val_err:
+    st.error(f"Environment validation execution failed: {val_err}")
+    st.stop()
 
-# =============================================================================
-# Page Configuration
-# =============================================================================
-
+# st.set_page_config MUST be the very first Streamlit command in the main script
 st.set_page_config(
-    page_title="Internet Exposure and Leak Discovery Engine",
-    page_icon=None,
+    page_title="EIRPP Security Advisory",
+    page_icon="shield",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
-# Professional CSS styling
-st.markdown("""
-<style>
-    .main-header {
-        font-size: 2rem;
-        font-weight: 600;
-        color: #1a1a2e;
-        margin-bottom: 0.3rem;
-        letter-spacing: -0.5px;
+# 2. Inject design system CSS resources
+try:
+    css_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "utils", "style.css")
+    with open(css_path, "r", encoding="utf-8") as f:
+        st.markdown(f.read(), unsafe_allow_html=True)
+except Exception as e:
+    st.warning(f"Failed to load CSS stylesheet: {e}")
+
+# 3. Disable browser input autocomplete/suggestions via Mutex Observer component
+st_components.html("""
+<script>
+(function() {
+    function disableAutocomplete() {
+        try {
+            var doc = window.parent.document;
+            doc.querySelectorAll('input').forEach(function(el) {
+                el.setAttribute('autocomplete', 'new-password');
+                el.setAttribute('autocomplete', 'off');
+            });
+        } catch(e) {}
     }
-    .sub-header {
-        font-size: 0.95rem;
-        color: #666;
-        margin-bottom: 1.5rem;
-    }
-    .section-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 0.5rem;
-    }
-    .result-card {
-        background: #fff;
-        border: 1px solid #e0e0e0;
-        border-radius: 6px;
-        padding: 1rem;
-        margin-bottom: 0.75rem;
-    }
-    .status-vulnerable {
-        background: #fff5f5;
-        color: #c53030;
-        padding: 4px 10px;
-        border-radius: 4px;
-        font-weight: 500;
-        font-size: 0.85rem;
-    }
-    .status-safe {
-        background: #f0fff4;
-        color: #276749;
-        padding: 4px 10px;
-        border-radius: 4px;
-        font-weight: 500;
-        font-size: 0.85rem;
-    }
-    .status-error {
-        background: #f7fafc;
-        color: #718096;
-        padding: 4px 10px;
-        border-radius: 4px;
-        font-weight: 500;
-        font-size: 0.85rem;
-    }
-    .score-badge {
-        font-weight: 600;
-        padding: 4px 12px;
-        border-radius: 4px;
-        font-size: 0.9rem;
-    }
-    .evidence-list {
-        font-size: 0.9rem;
-        color: #4a5568;
-        margin-top: 0.5rem;
-    }
-    .scan-log {
-        font-family: 'Consolas', 'Monaco', monospace;
-        font-size: 0.8rem;
-        color: #4a5568;
-        background: #f9fafb;
-        padding: 0.5rem;
-        border-radius: 4px;
-        margin: 0.25rem 0;
-    }
-</style>
+    disableAutocomplete();
+    try {
+        var observer = new MutationObserver(disableAutocomplete);
+        observer.observe(window.parent.document.body, {
+            childList: true,
+            subtree: true
+        });
+    } catch(e) {}
+})();
+</script>
+""", height=0)
+
+# 4. Authentication Gate
+try:
+    from auth.auth_manager import get_auth_manager
+    from auth.roles import Role, has_permission, get_allowed_pages
+    _AUTH_AVAILABLE = True
+except ImportError:
+    _AUTH_AVAILABLE = False
+
+if _AUTH_AVAILABLE:
+    if not st.session_state.get('aeris_authenticated', False):
+        st.markdown("""
+        <style>
+        [data-testid="stAppViewContainer"] { background: #0a0a0a; }
+        [data-testid="stSidebar"] { display: none; }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        st.markdown('<div style="max-width:420px;margin:80px auto 0 auto;">', unsafe_allow_html=True)
+        st.markdown('## AERIS')
+        st.markdown('<div style="font-size:0.8rem;opacity:0.5;margin-bottom:32px;">Exposure Intelligence & Risk Prioritization Platform</div>', unsafe_allow_html=True)
+        
+        with st.form('aeris_login'):
+            username = st.text_input('Username', placeholder='username')
+            password = st.text_input('Password', type='password', placeholder='password')
+            submitted = st.form_submit_button('Sign In', use_container_width=True, type='primary')
+            
+            if submitted:
+                _auth = get_auth_manager()
+                _ok, _role = _auth.verify_credentials(username.strip(), password)
+                if _ok:
+                    st.session_state['aeris_authenticated'] = True
+                    st.session_state['aeris_username'] = username.strip()
+                    st.session_state['aeris_role'] = _role
+                    st.rerun()
+                else:
+                    st.error('Invalid credentials. Please try again.')
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+        st.stop()
+    
+    # Load user role
+    _current_role_str = st.session_state.get('aeris_role', 'viewer')
+    try:
+        _current_role = Role(_current_role_str)
+    except ValueError:
+        _current_role = Role.VIEWER
+else:
+    st.warning("Authentication module not loaded. Failing closed for security.", icon="🔒")
+    st.stop()
+
+# 5. Sidebar Branding Header
+st.sidebar.markdown("""
+<div style="padding: 10px 0 20px 0;">
+  <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+    <div style="background:#dc3545; width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center;">
+      <span style="font-family:monospace; font-weight:900; font-size:1.45rem; color:#000;">A</span>
+    </div>
+    <div style="font-weight:900; font-size:1.45rem; letter-spacing:-0.03em; color:#fff;">AERIS</div>
+  </div>
+  <div style="padding:10px 14px;background:rgba(0,0,0,0.20); border-radius:6px;">
+    <div style="font-size:0.62rem;opacity:0.42;letter-spacing:0.06em;line-height:1.5;">Exposure Intelligence<br>&amp; Risk Prioritization Platform</div>
+  </div>
+</div>
 """, unsafe_allow_html=True)
 
+# 6. Sidebar Dynamic Navigation
+st.sidebar.markdown("""<div style="font-size:0.55rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;opacity:0.36;margin-bottom:8px;">Navigation</div>""", unsafe_allow_html=True)
 
-# =============================================================================
-# Session State Initialization
-# =============================================================================
+allowed_pages = get_allowed_pages(_current_role)
+if st.session_state.get("nav_page") not in allowed_pages:
+    st.session_state.nav_page = allowed_pages[0] if allowed_pages else "Scan History"
 
-if 'scan_results' not in st.session_state:
-    st.session_state.scan_results = []
-if 'scan_complete' not in st.session_state:
-    st.session_state.scan_complete = False
-if 'final_summary' not in st.session_state:
-    st.session_state.final_summary = None
-if 'engine' not in st.session_state:
-    st.session_state.engine = None
+_page_numbers = {
+    "Security Assessment": "01",
+    "Intelligence Visualization Workspace": "02",
+    "Upgraded Platform": "03",
+    "Batch Processing": "04",
+    "Scan History": "05",
+    "Adversarial Stress Test": "06",
+    "Red-Team Testing": "07",
+    "Admin: Readiness Tracker": "08",
+    "Admin: Anti-Theater Scanner": "09",
+}
 
+for _pname in allowed_pages:
+    _pnum = _page_numbers.get(_pname, "00")
+    btn_type = "primary" if st.session_state.nav_page == _pname else "secondary"
+    if st.sidebar.button(f"{_pnum}  {_pname}", key=f"nav_{_pname}", use_container_width=True, type=btn_type):
+        st.session_state.nav_page = _pname
+        st.rerun()
 
-# =============================================================================
-# Helper Functions
-# =============================================================================
+# 7. Sidebar System Status Panel
+st.sidebar.markdown("""<div style="height:16px;"></div>""", unsafe_allow_html=True)
+st.sidebar.markdown("""<div style="font-size:0.55rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;opacity:0.36;margin-bottom:8px;">System Status</div>""", unsafe_allow_html=True)
 
-def get_risk_style(risk_level: str) -> tuple:
-    """Get color and background based on risk level."""
-    styles = {
-        'CRITICAL': ('#c53030', '#fff5f5'),
-        'HIGH': ('#c05621', '#fffaf0'),
-        'MEDIUM': ('#b7791f', '#fffff0'),
-        'LOW': ('#276749', '#f0fff4'),
-        'ERROR': ('#718096', '#f7fafc')
-    }
-    return styles.get(risk_level, ('#718096', '#f7fafc'))
+try:
+    from risk_scoring.google_safe_browsing import get_api_status as _gsb_s
+    _gsb_ok = _gsb_s().get("configured", False)
+except Exception:
+    _gsb_ok = False
 
+try:
+    from risk_scoring.virustotal_client import get_api_status as _vt_s
+    _vt_ok = _vt_s().get("configured", False)
+except Exception:
+    _vt_ok = False
 
-def get_status_text(risk_level: str) -> str:
-    """Get status text based on risk level."""
-    if risk_level in ['CRITICAL', 'HIGH', 'MEDIUM']:
-        return "Vulnerable"
-    elif risk_level == 'LOW':
-        return "Safe"
-    return "Error"
+try:
+    from records.database import _get_connection
+    _db_conn = _get_connection()
+    _db_ok = bool(_db_conn and _db_conn.is_connected())
+    if _db_ok: _db_conn.close()
+    _db_label = "SQLite: Connected"
+except Exception:
+    _db_ok = False
+    _db_label = "SQLite: Unavailable"
 
-
-def display_interpretation(result: Dict[str, Any]):
-    """Display model interpretation for a result."""
-    score = result.get('risk_score', 0)
-    level = result.get('risk_level', 'LOW')
-    evidence = result.get('evidence', [])
-    biz_impact = result.get('business_impact', {})
-    
-    if level == 'CRITICAL':
-        st.error(f"Business Priority: Immediate attention required. Score {score} reflects critical exposure.")
-    elif level == 'HIGH':
-        st.warning(f"Business Priority: Significant risk detected. Prioritize investigation.")
-    elif level == 'MEDIUM':
-        st.info(f"Business Priority: Potential risk. Investigate during regular security cycles.")
-    else:
-        st.success("Business Priority: Baseline risk. No significant concerns.")
-    
-    # Business Risk Categories
-    if biz_impact:
-        st.markdown("**Business Risk Exposure:**")
-        for cat, items in biz_impact.items():
-            with st.expander(f"{cat} ({len(items)})"):
-                for item in items:
-                    st.write(f"- {item}")
-    
-    # Detailed factor breakdown
-    st.markdown("**Vulnerability Factors:**")
-    if evidence:
-        for item in evidence:
-            if any(word in item.lower() for word in ['known', 'critical', 'exploit', 'malicious', 'hacked', 'exposure', 'admin', 'entropy', 'suspicious directory', 'payload', 'obfuscation']):
-                st.markdown(f"- :red[{item}]")
-            else:
-                st.markdown(f"- {item}")
-    else:
-        st.markdown("- No active vulnerability factors detected.")
-
-    st.markdown("**Safety Factors:**")
-    st.markdown("- Standard configuration verified")
-    if score < 30:
-        st.markdown("- No patterns matching known malicious dataset clusters")
-
-
-def parse_urls_from_input(text_input: str, csv_file) -> List[Dict[str, Any]]:
-    """Parse assets from text input or CSV file."""
-    from risk_scanner import parse_input_list
-    assets = []
-    
-    # Parse text input
-    if text_input:
-        assets.extend(parse_input_list(text_input))
-    
-    # Parse CSV file
-    if csv_file is not None:
-        try:
-            content = csv_file.getvalue().decode('utf-8')
-            # parse_input_list handles multi-line/comma strings well
-            assets.extend(parse_input_list(content))
-        except Exception as e:
-            st.error(f"CSV read error: {e}")
-    
-    # Remove duplicates preserving order
-    seen = set()
-    unique_assets = []
-    for asset in assets:
-        # Use full URL or domain as unique identifier
-        identifier = f"{asset.get('url') or asset.get('domain') or asset.get('ip')}"
-        if identifier not in seen:
-            seen.add(identifier)
-            unique_assets.append(asset)
-    
-    return unique_assets
-
-
-def display_result_card(result: Dict[str, Any]):
-    """Display a single scan result."""
-    asset = result.get('asset', 'Unknown')
-    risk_score = result.get('risk_score', 0)
-    risk_level = result.get('risk_level', 'ERROR')
-    evidence = result.get('evidence', [])
-    
-    color, bg = get_risk_style(risk_level)
-    status_text = get_status_text(risk_level)
-    
-    # Status class for CSS
-    status_class = 'status-vulnerable' if status_text == 'Vulnerable' else (
-        'status-safe' if status_text == 'Safe' else 'status-error'
-    )
-    
-    with st.container():
-        col1, col2, col3 = st.columns([3, 1, 1])
-        
-        with col1:
-            st.markdown(f"**{asset}**")
-        
-        with col2:
-            st.markdown(
-                f"<span class='score-badge' style='background:{bg}; color:{color};'>"
-                f"Score: {risk_score}</span>",
-                unsafe_allow_html=True
-            )
-        
-        with col3:
-            st.markdown(
-                f"<span class='{status_class}'>{status_text}</span>",
-                unsafe_allow_html=True
-            )
-        
-        # Evidence in expander
-        with st.expander("View Evidence & Interpretation"):
-            tabs = st.tabs(["Evidence Logs", "Model Interpretation"])
-            
-            with tabs[0]:
-                if evidence:
-                    for item in evidence:
-                        st.markdown(f"- {item}")
-                else:
-                    st.markdown("_No specific evidence collected_")
-            
-            with tabs[1]:
-                display_interpretation(result)
-        
-        st.divider()
-
-
-# =============================================================================
-# Main UI
-# =============================================================================
-
-# Header
-st.markdown('<p class="main-header">Strategic Risk Intelligence Dashboard</p>', 
-            unsafe_allow_html=True)
-st.markdown('<p class="sub-header">Industrial-grade security assessment - ML-Powered Exposure Mapping & Threat Detection</p>', 
-            unsafe_allow_html=True)
-
-# Input Section
-st.markdown("### Tactical Input Center")
-st.caption("Industrial-scale assessment configuration")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    st.markdown("**Upload Asset List (CSV)**")
-    st.caption("Required column: 'url' or 'domain'")
-    csv_file = st.file_uploader(
-        "Choose CSV file",
-        type=['csv'],
-        label_visibility="collapsed"
-    )
-
-with col2:
-    st.markdown("**Bulk Asset Entry**")
-    st.caption("One target per line - handles raw URLs and IPs")
-    url_input = st.text_area(
-        "Enter URLs",
-        height=150,
-        placeholder="example.com\n192.168.1.1\nhttps://staging.dev",
-        label_visibility="collapsed"
-    )
-
-# Parse targets
-assets = parse_urls_from_input(url_input, csv_file)
-
-if assets:
-    st.markdown(f"**Targets Identified ({len(assets)})**")
-    for i, asset in enumerate(assets, 1):
-        display_label = asset.get('url') or asset.get('domain') or asset.get('ip')
-        if i <= 5:
-            st.write(f"{i}. {display_label}")
-        elif i == 6:
-            st.write(f"... and {len(assets)-5} more")
-    st.success(f"Successfully identified {len(assets)} targets.")
-
-# Scan Button
-st.markdown("---")
-start_scan = st.button(
-    "Start Strategic Scan",
-    type="primary",
-    disabled=len(assets) == 0,
-    use_container_width=True
-)
-
-# Sidebar for Technical Settings/Logs
-with st.sidebar:
-    st.markdown("### Technical Control Panel")
-    st.info("✅ **360-Degree Analysis Active**\n\nScanner now inspects full URL paths, entropy, and deep-link anomalies.")
-    st.divider()
-
-# =============================================================================
-# Scanning Process
-# =============================================================================
-
-if start_scan and assets:
-    # Reset state
-    st.session_state.scan_results = []
-    st.session_state.scan_complete = False
-    st.session_state.final_summary = None
-    
-    # Progress containers in Sidebar
-    with st.sidebar:
-        st.markdown("---")
-        st.markdown("**Live Scan Hub**")
-        progress_bar = st.progress(0)
-        status_container = st.empty()
-        log_expander = st.expander("Technical Scan Logs", expanded=True)
-    
-    # Initialize engine
-    engine = ScanEngine()
-    st.session_state.engine = engine
-    
-    # Run scan with progress
-    with status_container:
-        with st.status("Initializing Engine...", expanded=False) as status:
-            for progress in engine.scan_with_progress(assets):
-                # Update progress bar
-                progress_bar.progress(progress.progress)
-                
-                # Update status message
-                if progress.asset:
-                    status.update(label=f"Scanning: {progress.asset}")
-                    with log_expander:
-                        st.write(f"[{progress.asset}] {progress.message}")
-                else:
-                    status.update(label=progress.message)
-                    with log_expander:
-                        st.write(progress.message)
-                
-                # Store result when asset completes
-                if progress.result and progress.stage in ['complete', 'error']:
-                    st.session_state.scan_results.append(progress.result)
-                
-                # Check for completion
-                if progress.is_complete or progress.stage == 'done':
-                    st.session_state.scan_complete = True
-                    # If this is the final summary object, store it
-                    if progress.stage == 'done':
-                        # The done stage in scan_engine usually returns build_final_results
-                        # but we need to ensure we capture it from the generator return or the object
-                        pass
-                    
-                    status.update(label="Scan Complete", state="complete")
-                    progress_bar.empty()
-
-    # After generator finishes, get formal final results
-    if st.session_state.scan_complete:
-        st.session_state.final_summary = engine._build_final_results()
-
-# =============================================================================
-# Results Display
-# =============================================================================
-
-if st.session_state.scan_complete and st.session_state.final_summary:
-    summary = st.session_state.final_summary
-    
-    # accuracy data
-    accuracy = summary.get('accuracy_metrics', {})
-    
-    st.markdown("---")
-    st.markdown("### Analysis Insights")
-    
-    tabs = st.tabs(["Scan Summary", "Precision and Accuracy", "Graph Intelligence", "Detailed Results", "Model Evolution", "Scoring Methodology"])
-    
-    with tabs[0]:
-        # Summary metrics in columns
-        col1, col2, col3, col4 = st.columns(4)
-        
-        with col1:
-            st.metric(label="Total Targets", value=summary.get('total_sites', 0))
-        
-        with col2:
-            vulnerable = summary.get('vulnerable_sites', 0)
-            st.metric(label="Vulnerable", value=vulnerable, delta=f"+{vulnerable}" if vulnerable > 0 else None, delta_color="inverse")
-        
-        with col3:
-            st.metric(label="Safe (Baseline)", value=summary.get('safe_sites', 0))
-        
-        with col4:
-            st.metric(label="Strategic Risk Index", value=f"{summary.get('average_risk_score', 0):.1f}")
-            
-        # Download button
-        json_data = json.dumps(summary, indent=2, default=str)
-        st.download_button(
-            label="Download Strategic Risk Report (JSON)",
-            data=json_data,
-            file_name=f"strategic_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
-            mime="application/json",
-            use_container_width=True
-        )
-
-    with tabs[1]:
-        st.markdown("### Decision Confidence Matrix")
-        cols = st.columns(4)
-        cols[0].metric("Model Accuracy", f"{accuracy.get('accuracy', 0)*100:.1f}%")
-        cols[1].metric("Detection Precision", f"{accuracy.get('precision', 0)*100:.1f}%")
-        cols[2].metric("Threat Recall", f"{accuracy.get('recall', 0)*100:.1f}%")
-        cols[3].metric("F1 Security Index", f"{accuracy.get('f1', 0)*100:.1f}%")
-        
-        st.divider()
-        
-        # Confusion Matrix
-        cm = accuracy.get('confusion_matrix', {})
-        if cm:
-            col1, col2 = st.columns([1, 1])
-            with col1:
-                st.markdown("**Model Confusion Analysis**")
-                matrix_data = {
-                    "Actual \\ Pred": ["Malicious", "Benign"],
-                    "Malicious (T)": [f"TP: {cm['tp']}", f"FN: {cm['fn']}"],
-                    "Benign (F)": [f"FP: {cm['fp']}", f"TN: {cm['tn']}"]
-                }
-                st.table(pd.DataFrame(matrix_data))
-                st.caption("Validated against automated quality control datasets.")
-            
-            with col2:
-                st.markdown("**Business Readiness Projection**")
-                projection = summary.get('mvp_projection', {})
-                st.info(f"Market Status: {projection.get('readiness', 'Prototype')}")
-                st.success(f"System Recall: {projection.get('accuracy_recall', '0%')}")
-                st.caption("Target Performance for Production: > 90% Recall")
-
-    with tabs[2]:
-        graph = summary.get('graph_intelligence', {})
-        if graph and graph.get('node_count', 0) > 0:
-            col1, col2 = st.columns(2)
-            with col1:
-                st.markdown("**Infrastructure Network Health**")
-                st.write(f"- Connected Assets: {graph.get('node_count', 0)}")
-                st.write(f"- Relationship Links: {graph.get('edge_count', 0)}")
-                
-                # Risk Propagation
-                prop = graph.get('risk_propagation', {})
-                if prop:
-                    st.warning(f"**Risk Propagation Alert**: {prop.get('affected_count', 0)} assets affected via network proximity.")
-                    for n, s in prop.get('top_propagated', []):
-                        st.write(f"  • {n.split(':')[-1]}: {s*100:.1f}% risk spread")
-            
-            with col2:
-                st.markdown("**Strategic Relationship Hubs**")
-                hubs = graph.get('hubs', [])
-                if hubs:
-                    df_hubs = pd.DataFrame(hubs)
-                    df_hubs = df_hubs.rename(columns={"node": "Critical Hub", "score": "Inluence"})
-                    st.bar_chart(df_hubs.set_index("Critical Hub"))
-                else:
-                    st.info("No critical network hubs identified in this cluster.")
-            
-            st.info("Graph Intelligence identifies how a single compromise propagates through your ASN, IP space, and shared infrastructure.")
-        else:
-            st.info("Insufficient relationship data for cluster visualization.")
-
-    with tabs[3]:
-        # Individual results
-        st.markdown("### Tactical Risk Analysis")
-        st.write("Results filtered to show only **Priority Assets** (Vulnerable) by default.")
-        
-        # Filter options
-        risk_filter = st.selectbox(
-            "Filter by Severity",
-            options=["Priority Assets", "CRITICAL", "HIGH", "MEDIUM", "LOW", "All"]
-        )
-        
-        # Display filtered results
-        results = st.session_state.scan_results
-        if risk_filter == "Priority Assets":
-            results = [r for r in results if r.get('risk_level') != 'LOW' and r.get('risk_level') != 'ERROR']
-        elif risk_filter != "All":
-            results = [r for r in results if r.get('risk_level') == risk_filter]
-        
-        if results:
-            for i, result in enumerate(results, 1):
-                asset_name = result.get('asset')
-                level = result.get('risk_level')
-                st.markdown(f"#### {i}. {asset_name} ({level})")
-                display_result_card(result)
-        else:
-            st.info("No priority assets found in the current run.")
-
-    with tabs[4]:
-        st.markdown("### Model Evolution & Continuous Learning")
-        st.write("The system identifies patterns from every scan to improve its detection engine.")
-        
-        col1, col2 = st.columns(2)
-        with col1:
-            st.markdown("**Newly Learned Patterns**")
-            st.success("Pattern 862: Domain DGA resemblance in TLD clusters")
-            st.success("Pattern 411: Multi-hop risk spread via shared ASN")
-            st.info("Analysis: Structural similarity between staging and prod leaks")
-        
-        with col2:
-            st.markdown("**Model Maturity Status**")
-            st.progress(78)
-            st.caption("78% Model Stability Index reached.")
-            if st.button("Simulate Model Optimization (Retrain)"):
-                st.success("Model retrained successfully with current scan feedback. Estimated Accuracy Gain: +1.2%")
-
-    with tabs[5]:
-        st.markdown("### Risk Calculation Methodology")
-        st.write("""
-        This engine utilizes a multi-layer scoring approach to identify exposure risks:
-        
-        1. **Heuristic Analysis**: Direct pattern matching against a library of 200+ security signatures (admin panels, Git exposures, suspicious TLDs).
-        2. **Machine Learning Refinement**: A Random Forest classifier evaluates structural features of the asset to identify latent risks.
-        3. **Graph Intelligence**: Analyzes the asset's proximity to known compromised systems within the infrastructure graph.
-        
-        **How scores are calculated:**
-        - **0-30 (Low)**: Standard internet behavior or verified safe services.
-        - **30-50 (Medium)**: Discovery of minor exposures or suspicious but unconfirmed patterns.
-        - **50-75 (High)**: Exposure of sensitive services (Admin, DB) or strong brand imitation.
-        - **75-100 (Critical)**: Active breach association or catastrophic misconfigurations (Open .env, public credentials).
-        """)
-
-# =============================================================================
-# Empty State
-# =============================================================================
-
-elif not st.session_state.scan_complete:
-    st.markdown("---")
-    st.markdown(
-        """
-        <div style='text-align: center; padding: 2rem; color: #666;'>
-            <p style='font-size: 1.1rem;'>Enter URLs above and click <strong>Start Scan</strong></p>
-            <p style='margin-top: 1rem;'>The scanner checks for:</p>
-            <ul style='list-style: none; padding: 0;'>
-                <li>Admin panels and login pages</li>
-                <li>Credential leaks in public repositories</li>
-                <li>Security misconfigurations</li>
-                <li>Network exposure risks</li>
-            </ul>
-        </div>
-        """,
+def _sbar_status(label, ok):
+    c = "#198754" if ok else "#6c757d"
+    dot_bg = "#198754" if ok else "rgba(108,117,125,0.5)"
+    dot_glow = "rgba(25,135,84,0.3)" if ok else "rgba(108,117,125,0.15)"
+    st.sidebar.markdown(
+        f'<div style="display:flex; align-items:center; gap:8px; font-family:monospace; font-size:0.65rem; color:{c}; padding:2px 0;">'
+        f'<div style="width:6px; height:6px; border-radius:50%; background:{dot_bg}; box-shadow:0 0 4px {dot_glow};"></div>'
+        f'<span>{label}</span>'
+        f'</div>',
         unsafe_allow_html=True
     )
 
-# =============================================================================
-# Footer
-# =============================================================================
+_sbar_status("Google Safe Browsing", _gsb_ok)
+_sbar_status("VirusTotal Reputations", _vt_ok)
+_sbar_status(_db_label, _db_ok)
 
-st.markdown("---")
-st.caption("Internet Exposure & Leak Discovery Engine | ML-Powered Security Assessment")
+# 8. Environment Validation Warn block
+_is_admin = st.session_state.get('aeris_role') == 'admin'
+
+def _require_permission(permission: str) -> bool:
+    """Helper to enforce permission gating on dispatcher."""
+    if not has_permission(_current_role, permission):
+        st.error(f"Access Denied: Insufficient permissions for {permission}")
+        st.stop()
+        return False
+    return True
+
+if _is_admin:
+    try:
+        from config.env_validator import get_validation_report
+        _env_report = get_validation_report()
+        if 'INVALID' in _env_report or 'MISSING' in _env_report:
+            st.sidebar.warning(_env_report, icon="⚠️")
+    except Exception:
+        pass
+
+# 9. Sidebar User Control Area
+st.sidebar.markdown("""<div style="height:12px;"></div>""", unsafe_allow_html=True)
+if _is_admin:
+    st.sidebar.markdown("""<div style="font-size:0.55rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;opacity:0.36;margin-bottom:8px;">Control Panel</div>""", unsafe_allow_html=True)
+    st.session_state.debug_mode = st.sidebar.toggle("Debug Mode", value=st.session_state.get("debug_mode", False))
+else:
+    st.session_state.debug_mode = False
+
+_aeris_user = st.session_state.get('aeris_username', '')
+if _aeris_user:
+    st.sidebar.markdown(
+        f'<div style="font-size:0.62rem;opacity:0.42;margin-top:8px;margin-bottom:8px;font-family:monospace;">'
+        f'Signed in as <b>{_html.escape(_aeris_user)}</b> [{_current_role.value.upper()}]'
+        f'</div>',
+        unsafe_allow_html=True
+    )
+    if st.sidebar.button('Sign Out', use_container_width=True, type='secondary'):
+        for _k in ['aeris_authenticated', 'aeris_username', 'aeris_role', 'accepted_terms']:
+            st.session_state.pop(_k, None)
+        st.rerun()
+
+# 10. Page Dispatcher
+from pages import (
+    render_security_assessment,
+    render_visualization_workspace,
+    render_upgraded_platform,
+    render_scan_history,
+    render_batch_processing,
+    render_stress_test,
+    render_red_team,
+    render_readiness_tracker,
+    render_anti_theater_scanner
+)
+
+page = st.session_state.nav_page
+
+if page == "Security Assessment":
+    _require_permission("can_run_assessment")
+    render_security_assessment()
+elif page == "Intelligence Visualization Workspace":
+    _require_permission("can_view_visualization")
+    render_visualization_workspace()
+elif page == "Upgraded Platform":
+    _require_permission("can_run_assessment")
+    render_upgraded_platform()
+elif page == "Scan History":
+    _require_permission("can_view_history")
+    render_scan_history()
+elif page == "Batch Processing":
+    _require_permission("can_run_batch")
+    render_batch_processing()
+elif page == "Adversarial Stress Test":
+    _require_permission("can_access_stress_test")
+    render_stress_test()
+elif page == "Red-Team Testing":
+    _require_permission("can_access_red_team")
+    render_red_team()
+elif page == "Admin: Readiness Tracker":
+    _require_permission("can_view_readiness_tracker")
+    render_readiness_tracker()
+elif page == "Admin: Anti-Theater Scanner":
+    _require_permission("can_run_anti_theater_scan")
+    render_anti_theater_scanner()
