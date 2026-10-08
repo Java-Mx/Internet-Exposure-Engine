@@ -62,55 +62,18 @@ st_components.html("""
 </script>
 """, height=0)
 
-# 4. Authentication Gate
+# 4. Authentication Gate (Direct Access - Login screen disabled)
 try:
-    from auth.auth_manager import get_auth_manager
     from auth.roles import Role, has_permission, get_allowed_pages
     _AUTH_AVAILABLE = True
 except ImportError:
     _AUTH_AVAILABLE = False
 
-if _AUTH_AVAILABLE:
-    if not st.session_state.get('aeris_authenticated', False):
-        st.markdown("""
-        <style>
-        [data-testid="stAppViewContainer"] { background: #0a0a0a; }
-        [data-testid="stSidebar"] { display: none; }
-        </style>
-        """, unsafe_allow_html=True)
-        
-        st.markdown('<div style="max-width:420px;margin:80px auto 0 auto;">', unsafe_allow_html=True)
-        st.markdown('## AERIS')
-        st.markdown('<div style="font-size:0.8rem;opacity:0.5;margin-bottom:32px;">Exposure Intelligence & Risk Prioritization Platform</div>', unsafe_allow_html=True)
-        
-        with st.form('aeris_login'):
-            username = st.text_input('Username', placeholder='username')
-            password = st.text_input('Password', type='password', placeholder='password')
-            submitted = st.form_submit_button('Sign In', use_container_width=True, type='primary')
-            
-            if submitted:
-                _auth = get_auth_manager()
-                _ok, _role = _auth.verify_credentials(username.strip(), password)
-                if _ok:
-                    st.session_state['aeris_authenticated'] = True
-                    st.session_state['aeris_username'] = username.strip()
-                    st.session_state['aeris_role'] = _role
-                    st.rerun()
-                else:
-                    st.error('Invalid credentials. Please try again.')
-        
-        st.markdown('</div>', unsafe_allow_html=True)
-        st.stop()
-    
-    # Load user role
-    _current_role_str = st.session_state.get('aeris_role', 'viewer')
-    try:
-        _current_role = Role(_current_role_str)
-    except ValueError:
-        _current_role = Role.VIEWER
-else:
-    st.warning("Authentication module not loaded. Failing closed for security.", icon="🔒")
-    st.stop()
+# Auto-authenticate session with admin privileges for direct dashboard access
+st.session_state['aeris_authenticated'] = True
+st.session_state['aeris_username'] = 'admin'
+st.session_state['aeris_role'] = 'admin'
+_current_role = Role.ADMIN
 
 # 5. Sidebar Branding Header
 st.sidebar.markdown("""
